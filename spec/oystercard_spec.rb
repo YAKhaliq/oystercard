@@ -6,7 +6,14 @@ describe Oystercard do
     subject.top_up(Oystercard::MINIMUM_BALANCE)
     subject.touch_in(station)
     expect(subject.entry_station).to eq station
-  end  
+  end
+  it 'stores the exit station' do
+    subject.top_up(Oystercard::MINIMUM_BALANCE)
+    subject.touch_in(station)
+    subject.touch_out(station)
+    expect(subject.exit_station).to eq station
+  end
+
   it 'checks if no money on card' do
     expect(subject.balance).to eq(0)
   end
@@ -32,7 +39,7 @@ describe Oystercard do
     it { is_expected.to respond_to(:touch_out)}
 
     it 'deduct balance' do
-      expect {subject.touch_out}.to change{subject.balance}.by (-Oystercard::MINIMUM_CHARGE)
+      expect {subject.touch_out(station)}.to change{subject.balance}.by (-Oystercard::MINIMUM_CHARGE)
     end
   end
   describe '#in_journey?' do
@@ -49,7 +56,7 @@ describe Oystercard do
     it "can touch out" do
       subject.top_up(1)
       subject.touch_in(station)
-      subject.touch_out
+      subject.touch_out(station)
       expect(subject).not_to be_in_journey
     end
 end
