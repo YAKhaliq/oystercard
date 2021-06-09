@@ -2,6 +2,7 @@ require 'oystercard'
 
 describe Oystercard do
   let(:station){ double :station }
+  let(:xStation){ double :xStation}
   it 'stores the entry station' do
     subject.top_up(Oystercard::MINIMUM_BALANCE)
     subject.touch_in(station)
@@ -59,4 +60,23 @@ describe Oystercard do
       subject.touch_out(station)
       expect(subject).not_to be_in_journey
     end
+  describe '#journey_log' do
+    it 'check journey is empty by default' do
+      expect(subject.journey_log).to eq({})
+    end
+    it 'store one journey' do
+      subject.top_up(5)
+      subject.touch_in(station)
+      subject.touch_out(xStation)
+      expect(subject.journey_log).to eq({station => xStation})
+    end
+    it 'can store more than one journey' do
+      subject.top_up(20)
+      subject.touch_in(station)
+      subject.touch_out(xStation)
+      subject.touch_in(xStation)
+      subject.touch_out(station)
+      expect(subject.journey_log).to eq({station => xStation, xStation => station})
+    end
+  end
 end
